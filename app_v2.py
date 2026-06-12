@@ -15,22 +15,225 @@ from sklearn.metrics import (accuracy_score, precision_score, recall_score,
 import warnings
 warnings.filterwarnings('ignore')
 
+# ── Chart theme ────────────────────────────────────────────────────────────────
+plt.rcParams.update({
+    'figure.facecolor':  'none',
+    'axes.facecolor':    'none',
+    'axes.edgecolor':    '#444',
+    'axes.labelcolor':   '#ccc',
+    'axes.titlesize':    12,
+    'axes.titleweight':  'bold',
+    'axes.titlepad':     10,
+    'axes.spines.top':   False,
+    'axes.spines.right': False,
+    'axes.grid':         True,
+    'grid.color':        '#333',
+    'grid.linewidth':    0.5,
+    'grid.alpha':        0.6,
+    'xtick.color':       '#aaa',
+    'ytick.color':       '#aaa',
+    'xtick.labelsize':   9,
+    'ytick.labelsize':   9,
+    'legend.fontsize':   9,
+    'legend.framealpha': 0.15,
+    'legend.edgecolor':  '#555',
+    'text.color':        '#ddd',
+    'font.family':       'sans-serif',
+})
+
 st.set_page_config(page_title="Bank Churn Intelligence", page_icon="🏦",
                    layout="wide", initial_sidebar_state="expanded")
 
 st.markdown("""
 <style>
-.main{padding:1rem 2rem}
-.metric-card{background:#f8f9fa;border-radius:10px;padding:16px 20px;border-left:4px solid #2E75B6;margin-bottom:10px}
-.metric-card.danger{border-left-color:#C0392B}
-.metric-card.success{border-left-color:#27AE60}
-.metric-card.warning{border-left-color:#F39C12}
-.section-header{font-size:20px;font-weight:700;color:#2E75B6;border-bottom:2px solid #2E75B6;padding-bottom:6px;margin:20px 0 16px 0}
-.insight-box{background:#EBF5FB;border-radius:8px;padding:12px 16px;border-left:3px solid #2E75B6;font-size:14px;margin:6px 0}
-.insight-box.red{background:#FDEDEC;border-left-color:#C0392B}
-.insight-box.green{background:#EAFAF1;border-left-color:#27AE60}
-.insight-box.orange{background:#FEF9E7;border-left-color:#F39C12}
-.seg-card{border-radius:12px;padding:16px;margin-bottom:10px;text-align:center}
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+/* ── CSS Custom Properties (auto dark/light) ── */
+:root {
+  --primary:        #3B82F6;
+  --primary-dim:    rgba(59,130,246,0.15);
+  --primary-border: rgba(59,130,246,0.35);
+  --danger:         #EF4444;
+  --danger-dim:     rgba(239,68,68,0.12);
+  --danger-border:  rgba(239,68,68,0.35);
+  --success:        #22C55E;
+  --success-dim:    rgba(34,197,94,0.12);
+  --success-border: rgba(34,197,94,0.35);
+  --warning:        #F59E0B;
+  --warning-dim:    rgba(245,158,11,0.12);
+  --warning-border: rgba(245,158,11,0.35);
+  --surface:        rgba(255,255,255,0.06);
+  --surface-border: rgba(255,255,255,0.10);
+  --text-primary:   inherit;
+  --text-muted:     rgba(150,150,170,1);
+  --radius:         10px;
+  --radius-lg:      14px;
+}
+
+/* ── Global typography ── */
+html, body, [class*="css"] {
+  font-family: 'Inter', system-ui, sans-serif !important;
+}
+
+/* ── Page padding ── */
+.main .block-container {
+  padding: 1.5rem 2.5rem 3rem 2.5rem !important;
+  max-width: 1400px;
+}
+
+/* ── Page title (h1) ── */
+h1 {
+  font-size: 2rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1.2 !important;
+  margin-bottom: 0.25rem !important;
+}
+
+/* ── Section heading (h2 / ####) ── */
+h2, h3 {
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  margin-top: 1.4rem !important;
+  margin-bottom: 0.6rem !important;
+  padding-bottom: 6px !important;
+  border-bottom: 1.5px solid var(--primary-border) !important;
+  color: var(--primary) !important;
+}
+
+h4 {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  margin-top: 1.2rem !important;
+  margin-bottom: 0.4rem !important;
+  padding-bottom: 5px !important;
+  border-bottom: 1px solid var(--surface-border) !important;
+}
+
+/* ── Page subtitle ── */
+.page-subtitle {
+  font-size: 0.9rem;
+  opacity: 0.6;
+  margin-bottom: 1.25rem;
+  margin-top: -0.15rem;
+  letter-spacing: 0.01em;
+}
+
+/* ── Insight / callout boxes ── */
+.insight-box {
+  background: var(--primary-dim);
+  border-left: 3px solid var(--primary);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 11px 15px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  margin: 5px 0;
+}
+.insight-box.red {
+  background: var(--danger-dim);
+  border-left-color: var(--danger);
+}
+.insight-box.green {
+  background: var(--success-dim);
+  border-left-color: var(--success);
+}
+.insight-box.orange {
+  background: var(--warning-dim);
+  border-left-color: var(--warning);
+}
+
+/* ── Metric cards (used in confusion matrix section) ── */
+.metric-card {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 9px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.metric-card.danger { border-left-color: var(--danger); }
+.metric-card.success { border-left-color: var(--success); }
+.metric-card.warning { border-left-color: var(--warning); }
+
+/* ── Segment cards ── */
+.seg-card {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* ── Sidebar styling ── */
+[data-testid="stSidebar"] {
+  border-right: 1px solid var(--surface-border) !important;
+}
+[data-testid="stSidebar"] .stRadio label {
+  padding: 5px 8px;
+  border-radius: 7px;
+  transition: background 0.15s;
+}
+[data-testid="stSidebar"] .stRadio label:hover {
+  background: var(--primary-dim);
+}
+
+/* ── Streamlit native metric tweaks ── */
+[data-testid="stMetric"] {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius);
+  padding: 14px 16px !important;
+}
+[data-testid="stMetricLabel"] {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  opacity: 0.6 !important;
+}
+[data-testid="stMetricValue"] {
+  font-size: 1.65rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* ── Dataframe / table ── */
+[data-testid="stDataFrame"] {
+  border-radius: var(--radius) !important;
+  overflow: hidden !important;
+}
+
+/* ── Divider ── */
+hr {
+  border-color: var(--surface-border) !important;
+  margin: 1rem 0 !important;
+}
+
+/* ── Footer ── */
+.dash-footer {
+  text-align: center;
+  font-size: 11.5px;
+  opacity: 0.4;
+  padding: 1rem 0 0.5rem;
+  letter-spacing: 0.04em;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Section-header utility (kept for back-compat) ── */
+.section-header {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--primary);
+  border-bottom: 1.5px solid var(--primary-border);
+  padding-bottom: 6px;
+  margin: 20px 0 14px;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -104,7 +307,7 @@ df_risk["RiskLevel"] = pd.cut(probs_all, bins=[0,0.3,0.6,1.01], labels=["Low","M
 # ── Sidebar ────────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("## 🏦 Churn Intelligence")
-    st.markdown("*European Bank · 2025*")
+    st.markdown("<div class='page-subtitle'>European Bank · 2025</div>", unsafe_allow_html=True)
     st.divider()
     page = st.radio("Navigation", [
         "📊 Overview & EDA",
@@ -127,7 +330,7 @@ with st.sidebar:
 # ══════════════════════════════════════════════════════════════════════════════
 if page == "📊 Overview & EDA":
     st.markdown("# 📊 Exploratory Data Analysis")
-    st.markdown("*European Bank · 10,000 customers · France, Spain, Germany*")
+    st.markdown("<div class='page-subtitle'>European Bank · 10,000 customers · France, Spain, Germany</div>", unsafe_allow_html=True)
 
     c1,c2,c3,c4,c5,c6 = st.columns(6)
     c1.metric("Total Customers", "10,000")
@@ -140,7 +343,7 @@ if page == "📊 Overview & EDA":
 
     col1,col2 = st.columns(2)
     with col1:
-        st.markdown("#### Churn Distribution")
+        st.markdown("### Churn Distribution")
         fig,ax = plt.subplots(figsize=(5,4))
         vals = [df.Exited.value_counts()[0], df.Exited.value_counts()[1]]
         wedges,texts,autotexts = ax.pie(vals, labels=['Retained','Churned'],
@@ -151,7 +354,7 @@ if page == "📊 Overview & EDA":
         st.pyplot(fig); plt.close()
 
     with col2:
-        st.markdown("#### Churn Rate by Geography")
+        st.markdown("### Churn Rate by Geography")
         geo_churn = df.groupby('Geography')['Exited'].mean()*100
         fig,ax = plt.subplots(figsize=(5,4))
         colors_geo = ['#C0392B' if v>25 else '#F39C12' if v>20 else '#27AE60' for v in geo_churn.values]
@@ -164,7 +367,7 @@ if page == "📊 Overview & EDA":
 
     col3,col4 = st.columns(2)
     with col3:
-        st.markdown("#### Churn by Age Group")
+        st.markdown("### Churn by Age Group")
         bins=[0,30,40,50,60,100]; labels=['18-30','31-40','41-50','51-60','60+']
         df['AgeGroup'] = pd.cut(df['Age'], bins=bins, labels=labels)
         age_churn = df.groupby('AgeGroup',observed=True)['Exited'].mean()*100
@@ -177,7 +380,7 @@ if page == "📊 Overview & EDA":
         st.pyplot(fig); plt.close()
 
     with col4:
-        st.markdown("#### Active vs Inactive Churn")
+        st.markdown("### Active vs Inactive Churn")
         act = df.groupby('IsActiveMember')['Exited'].mean()*100
         fig,ax = plt.subplots(figsize=(5,4))
         ax.bar(['Inactive','Active'], act.values, color=['#C0392B','#27AE60'], edgecolor='white', linewidth=1.5)
@@ -188,7 +391,7 @@ if page == "📊 Overview & EDA":
 
     col5,col6 = st.columns(2)
     with col5:
-        st.markdown("#### Churn by Gender")
+        st.markdown("### Churn by Gender")
         gen_churn = df.groupby('Gender')['Exited'].mean()*100
         fig,ax = plt.subplots(figsize=(5,4))
         ax.bar(gen_churn.index, gen_churn.values, color=['#D4537E','#2E75B6'], edgecolor='white', linewidth=1.5)
@@ -198,7 +401,7 @@ if page == "📊 Overview & EDA":
         ax.set_ylim(0,30); st.pyplot(fig); plt.close()
 
     with col6:
-        st.markdown("#### Churn by Products Held")
+        st.markdown("### Churn by Products Held")
         prod_churn = df.groupby('NumOfProducts')['Exited'].mean()*100
         fig,ax = plt.subplots(figsize=(5,4))
         c=['#27AE60','#27AE60','#C0392B','#922B21']
@@ -208,7 +411,7 @@ if page == "📊 Overview & EDA":
         ax.set_xlabel('Number of Products'); ax.set_ylabel('Churn Rate (%)'); ax.set_title('Churn by Products Held', fontweight='bold'); ax.set_ylim(0,110)
         st.pyplot(fig); plt.close()
 
-    st.markdown("#### 💡 Key EDA Insights")
+    st.markdown("### 💡 Key EDA Insights")
     for ins in [
         ("red",  "🔴 Germany 32.4% churn — 2× France/Spain. Immediate regional intervention needed."),
         ("red",  "🔴 Age 51-60 critical — 56.2% churn. Life transition phase with highest attrition."),
@@ -242,7 +445,7 @@ elif page == "🤖 Model Comparison":
 
     col1,col2 = st.columns(2)
     with col1:
-        st.markdown("#### ROC Curves — All Models")
+        st.markdown("### ROC Curves — All Models")
         fig,ax = plt.subplots(figsize=(6,5))
         colors_roc = ['#85C1E9','#F39C12','#2E75B6','#1A5276']
         for (name,res),col in zip(results.items(),colors_roc):
@@ -254,7 +457,7 @@ elif page == "🤖 Model Comparison":
         st.pyplot(fig); plt.close()
 
     with col2:
-        st.markdown("#### Precision-Recall Curves")
+        st.markdown("### Precision-Recall Curves")
         fig,ax = plt.subplots(figsize=(6,5))
         for (name,res),col in zip(results.items(),colors_roc):
             prec_c,rec_c,_ = precision_recall_curve(y_test, res['y_prob'])
@@ -264,7 +467,7 @@ elif page == "🤖 Model Comparison":
         ax.set_title('Precision-Recall Curves', fontweight='bold'); ax.legend(fontsize=8)
         st.pyplot(fig); plt.close()
 
-    st.markdown("#### Confusion Matrices — Business Interpretation")
+    st.markdown("### Confusion Matrices — Business Interpretation")
     cols = st.columns(4)
     for idx,(name,res) in enumerate(results.items()):
         with cols[idx]:
@@ -277,14 +480,14 @@ elif page == "🤖 Model Comparison":
             ax.set_title(f'{name}\nAUC={res["roc_auc"]:.3f}', fontsize=9, fontweight='bold')
             st.pyplot(fig); plt.close()
             st.markdown(f"""
-            <div style='font-size:11px;background:#f8f9fa;padding:6px;border-radius:6px;margin-top:4px'>
+            <div style='font-size:11px;background:var(--surface);border:1px solid var(--surface-border);padding:8px 10px;border-radius:8px;margin-top:4px;line-height:1.8'>
             ✅ <b>TP={res['TP']}</b> Correctly caught<br>
             ⚠️ <b>FN={res['FN']}</b> Missed churners<br>
             💸 <b>FP={res['FP']}</b> False alarms<br>
             ✅ <b>TN={res['TN']}</b> Correctly retained
             </div>""", unsafe_allow_html=True)
 
-    st.markdown("#### 5-Fold Cross-Validation — Gradient Boosting")
+    st.markdown("### 5-Fold Cross-Validation — Gradient Boosting")
     col1,col2 = st.columns(2)
     with col1:
         fig,ax = plt.subplots(figsize=(6,3))
@@ -310,9 +513,9 @@ elif page == "🤖 Model Comparison":
 # ══════════════════════════════════════════════════════════════════════════════
 elif page == "📐 Model Quality Metrics":
     st.markdown("# 📐 Model Quality & Threshold Analysis")
-    st.markdown("*Evaluator improvement: Comprehensive evaluation metrics with business interpretation*")
+    st.markdown("<div class='page-subtitle'>Comprehensive evaluation metrics with business interpretation</div>", unsafe_allow_html=True)
 
-    st.markdown("#### Threshold Sensitivity Analysis")
+    st.markdown("### Threshold Sensitivity Analysis")
     st.markdown("*Changing the prediction threshold changes Precision vs Recall tradeoff*")
 
     thresholds = [0.3, 0.4, 0.5, 0.6, 0.7]
@@ -340,7 +543,7 @@ elif page == "📐 Model Quality Metrics":
 
     col1,col2 = st.columns(2)
     with col1:
-        st.markdown("#### Precision vs Recall Tradeoff")
+        st.markdown("### Precision vs Recall Tradeoff")
         fig,ax = plt.subplots(figsize=(6,4))
         ax.plot(thresholds, [d['Precision'] for d in thresh_data], 'o-', color='#2E75B6', lw=2, markersize=8, label='Precision')
         ax.plot(thresholds, [d['Recall'] for d in thresh_data], 's-', color='#C0392B', lw=2, markersize=8, label='Recall')
@@ -352,7 +555,7 @@ elif page == "📐 Model Quality Metrics":
         st.pyplot(fig); plt.close()
 
     with col2:
-        st.markdown("#### False Positive vs False Negative")
+        st.markdown("### False Positive vs False Negative")
         fig,ax = plt.subplots(figsize=(6,4))
         ax.plot(thresholds, [d['FP (False Alarms)'] for d in thresh_data], 'o-', color='#F39C12', lw=2, markersize=8, label='FP — False Alarms (wasted budget)')
         ax.plot(thresholds, [d['FN (Missed Churners)'] for d in thresh_data], 's-', color='#C0392B', lw=2, markersize=8, label='FN — Missed Churners (lost CLV)')
@@ -362,7 +565,7 @@ elif page == "📐 Model Quality Metrics":
         ax.legend(fontsize=9); ax.grid(True, alpha=0.3)
         st.pyplot(fig); plt.close()
 
-    st.markdown("#### Risk Segment Quality Assessment")
+    st.markdown("### Risk Segment Quality Assessment")
     st.markdown("*How well-separated are the 3 risk tiers?*")
 
     seg_data = {
@@ -377,7 +580,7 @@ elif page == "📐 Model Quality Metrics":
             <div style='background:{data["color"]}22;border:2px solid {data["color"]};border-radius:12px;padding:16px;text-align:center'>
             <div style='font-size:16px;font-weight:700;color:{data["color"]}'>{seg}</div>
             <div style='font-size:28px;font-weight:800;color:{data["color"]};margin:8px 0'>{data["n"]:,}</div>
-            <div style='font-size:13px;color:#555'>customers</div>
+            <div style='font-size:13px;opacity:0.65'>customers</div>
             <hr style='border-color:{data["color"]}44'>
             <div style='font-size:14px'><b>Actual Churn:</b> {data["actual_churn"]}%</div>
             <div style='font-size:14px'><b>Avg Probability:</b> {data["avg_prob"]}%</div>
@@ -386,7 +589,7 @@ elif page == "📐 Model Quality Metrics":
     st.markdown("")
     col1,col2 = st.columns(2)
     with col1:
-        st.markdown("#### Segment Separation Quality")
+        st.markdown("### Segment Separation Quality")
         fig,ax = plt.subplots(figsize=(6,4))
         segs = ['Low Risk', 'Medium Risk', 'High Risk']
         actual = [8.7, 45.7, 87.4]
@@ -402,7 +605,7 @@ elif page == "📐 Model Quality Metrics":
         st.pyplot(fig); plt.close()
 
     with col2:
-        st.markdown("#### Probability Distribution by True Label")
+        st.markdown("### Probability Distribution by True Label")
         fig,ax = plt.subplots(figsize=(6,4))
         ax.hist(best['y_prob'][y_test==0], bins=40, alpha=0.7, color='#27AE60', label='Retained (actual)', density=True)
         ax.hist(best['y_prob'][y_test==1], bins=40, alpha=0.7, color='#C0392B', label='Churned (actual)', density=True)
@@ -412,7 +615,7 @@ elif page == "📐 Model Quality Metrics":
         ax.set_title('Score Separation by True Label', fontweight='bold'); ax.legend(fontsize=8)
         st.pyplot(fig); plt.close()
 
-    st.markdown("#### 📌 Model Quality Business Interpretation")
+    st.markdown("### 📌 Model Quality Business Interpretation")
     for ins in [
         ("green","✅ <b>Threshold 0.4 recommended for retention campaigns</b>: Catches 55.5% of churners with 70% precision — optimal budget/coverage balance."),
         ("orange","⚠️ <b>At threshold 0.5</b>: 53 false alarms (wasted retention spend) but only 206 missed churners. Acceptable for high-value segments."),
@@ -430,7 +633,7 @@ elif page == "🔍 Feature Importance":
 
     col1,col2 = st.columns([3,2])
     with col1:
-        st.markdown("#### Top 20 Feature Importances (Gradient Boosting)")
+        st.markdown("### Top 20 Feature Importances (Gradient Boosting)")
         fig,ax = plt.subplots(figsize=(7,8))
         top20 = fi.head(20)
         colors = ['#C0392B' if v>0.08 else '#E67E22' if v>0.05 else '#2E75B6' for v in top20.values]
@@ -446,20 +649,20 @@ elif page == "🔍 Feature Importance":
         st.pyplot(fig); plt.close()
 
     with col2:
-        st.markdown("#### Top 10 Features")
+        st.markdown("### Top 10 Features")
         top10 = fi.head(10).reset_index()
         top10.columns = ['Feature','Importance']
         top10['%'] = (top10['Importance']*100).round(1).astype(str)+'%'
         top10.insert(0,'Rank',range(1,11))
         st.dataframe(top10[['Rank','Feature','%']], hide_index=True, use_container_width=True)
-        st.markdown("#### Engineered Features")
+        st.markdown("### Engineered Features")
         eng = ['BalanceToSalary','ProductDensity','EngageProduct','AgeTenure']
         for f in eng:
             if f in fi.index:
                 v = fi[f]
                 st.progress(min(float(v)*8,1.0), text=f"{f}: {v:.4f}")
 
-    st.markdown("#### Correlation Heatmap")
+    st.markdown("### Correlation Heatmap")
     key_cols = ['Age','Balance','IsActiveMember','NumOfProducts','CreditScore','Tenure','EstimatedSalary','Exited']
     fig,ax = plt.subplots(figsize=(9,6))
     corr = df[key_cols].corr()
@@ -469,7 +672,7 @@ elif page == "🔍 Feature Importance":
     ax.set_title('Feature Correlation Matrix', fontweight='bold')
     st.pyplot(fig); plt.close()
 
-    st.markdown("#### 💡 Feature Insights")
+    st.markdown("### 💡 Feature Insights")
     for ins in [
         ("red","🔴 <b>Age (38.7%)</b> — Single most powerful predictor. 41-60 cohort in life transition phase with highest attrition."),
         ("red","🔴 <b>NumOfProducts (28.8%)</b> — 3+ products = over-selling signal. High importance confirms dissatisfaction."),
@@ -484,7 +687,7 @@ elif page == "🔍 Feature Importance":
 # ══════════════════════════════════════════════════════════════════════════════
 elif page == "👥 Customer Segment Profiles":
     st.markdown("# 👥 Customer Segment Profiles")
-    st.markdown("*Evaluator improvement: Deep business interpretation for each risk segment*")
+    st.markdown("<div class='page-subtitle'>Deep business interpretation for each risk segment</div>", unsafe_allow_html=True)
 
     df_risk['AgeGroup'] = pd.cut(df_risk['Age'], bins=[0,30,40,50,60,100], labels=['18-30','31-40','41-50','51-60','60+'])
 
@@ -548,11 +751,11 @@ elif page == "👥 Customer Segment Profiles":
 # ══════════════════════════════════════════════════════════════════════════════
 elif page == "💰 Business ROI Calculator":
     st.markdown("# 💰 Business ROI Calculator")
-    st.markdown("*Evaluator improvement: Quantified business impact with cost-benefit analysis*")
+    st.markdown("<div class='page-subtitle'>Quantified business impact with cost-benefit analysis</div>", unsafe_allow_html=True)
 
     col1,col2 = st.columns(2)
     with col1:
-        st.markdown("#### Input Parameters")
+        st.markdown("### Input Parameters")
         avg_clv         = st.slider("Average CLV per Customer (€)", 1000, 10000, 2500, 100)
         retention_cost  = st.slider("Retention Campaign Cost per Customer (€)", 50, 500, 150, 10)
         intervention_rate = st.slider("Campaign Success Rate (%)", 10, 60, 30, 5)
@@ -577,7 +780,7 @@ elif page == "💰 Business ROI Calculator":
     roi_pct          = (net_benefit / campaign_cost * 100) if campaign_cost > 0 else 0
 
     with col2:
-        st.markdown("#### ROI Results")
+        st.markdown("### ROI Results")
         r1,r2 = st.columns(2)
         r1.metric("Customers Flagged", f"{total_high_risk:,}")
         r2.metric("True Churners Caught", f"{total_caught:,}")
@@ -590,7 +793,7 @@ elif page == "💰 Business ROI Calculator":
     st.divider()
     col1,col2 = st.columns(2)
     with col1:
-        st.markdown("#### Cost Breakdown")
+        st.markdown("### Cost Breakdown")
         fig,ax = plt.subplots(figsize=(6,4))
         categories = ['CLV Retained\n(Benefit)', 'Campaign Cost\n(Investment)', 'Net Benefit']
         values = [clv_retained, -campaign_cost, net_benefit]
@@ -605,7 +808,7 @@ elif page == "💰 Business ROI Calculator":
         st.pyplot(fig); plt.close()
 
     with col2:
-        st.markdown("#### False Positive vs False Negative Cost")
+        st.markdown("### False Positive vs False Negative Cost")
         fp_cost_val = total_false_alarm * retention_cost
         fn_cost_val = total_missed * avg_clv
         fig,ax = plt.subplots(figsize=(6,4))
@@ -616,7 +819,7 @@ elif page == "💰 Business ROI Calculator":
         ax.set_ylabel('Cost (€)'); ax.set_title('Cost of Model Errors', fontweight='bold')
         st.pyplot(fig); plt.close()
 
-    st.markdown("#### 📊 Full Scenario Comparison")
+    st.markdown("### 📊 Full Scenario Comparison")
     scenarios = []
     for t in [0.3, 0.4, 0.5, 0.6, 0.7]:
         yp_t = (best['y_prob'] >= t).astype(int)
@@ -643,7 +846,7 @@ elif page == "🎯 What-If Simulator":
 
     col_inp,col_out = st.columns([1,1])
     with col_inp:
-        st.markdown("#### Customer Profile Input")
+        st.markdown("### Customer Profile Input")
         age       = st.slider("Age", 18, 80, 38)
         credit    = st.slider("Credit Score", 300, 850, 650)
         balance   = st.slider("Account Balance (€)", 0, 250000, 76000, step=1000)
@@ -674,7 +877,7 @@ elif page == "🎯 What-If Simulator":
     prob = gb_model.predict_proba(input_df)[0][1]
 
     with col_out:
-        st.markdown("#### Churn Risk Assessment")
+        st.markdown("### Churn Risk Assessment")
         if prob < 0.3:
             risk_label,risk_color,rec = "🟢 LOW RISK","#27AE60","Stable customer. Focus on cross-sell and CLV maximization."
         elif prob < 0.6:
@@ -687,7 +890,7 @@ elif page == "🎯 What-If Simulator":
         padding:24px;text-align:center;margin-bottom:16px">
             <div style="font-size:42px;font-weight:800;color:{risk_color}">{prob*100:.1f}%</div>
             <div style="font-size:20px;font-weight:700;color:{risk_color};margin:4px 0">{risk_label}</div>
-            <div style="font-size:13px;color:#555;margin-top:8px">Churn Probability</div>
+            <div style="font-size:13px;opacity:0.6;margin-top:8px">Churn Probability</div>
         </div>""", unsafe_allow_html=True)
 
         st.markdown(f"**Recommendation:** {rec}")
@@ -740,4 +943,4 @@ elif page == "📋 Customer Risk Table":
         file_name="customer_churn_risk_scores.csv", mime="text/csv")
 
 st.divider()
-st.markdown("<div style='text-align:center;color:#aaa;font-size:12px'>Bank Churn Intelligence Dashboard · European Bank 2025 · Gradient Boosting AUC 0.868 · CV: 0.866±0.008</div>", unsafe_allow_html=True)
+st.markdown("<div class='dash-footer'>Bank Churn Intelligence Dashboard · European Bank 2025 · Gradient Boosting AUC 0.868 · CV: 0.866 ± 0.008</div>", unsafe_allow_html=True)
