@@ -306,11 +306,11 @@ SCALE = len(df) / len(y_test)
 with st.sidebar:
     st.markdown("""
     <div style="padding:4px 0 14px 0;">
-      <div style="font-size:9.5px;font-weight:700;letter-spacing:0.14em;
+      <div style="font-size:13.5px;font-weight:700;letter-spacing:0.14em;
                   text-transform:uppercase;color:#3B82F6;font-family:monospace;margin-bottom:6px;">
         🏦 Project
       </div>
-      <div style="font-size:16px;font-weight:800;line-height:1.4;letter-spacing:-0.02em;">
+      <div style="font-size:20px;font-weight:800;line-height:1.4;letter-spacing:-0.02em;">
         Predictive Modeling and<br>Risk Scoring for Bank<br>Customer Churn
       </div>
       <div style="font-size:11px;font-weight:500;opacity:0.5;margin-top:5px;">
