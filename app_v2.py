@@ -316,6 +316,9 @@ with st.sidebar:
       <div style="font-size:11px;font-weight:500;opacity:0.5;margin-top:5px;">
         European Bank · 2025
       </div>
+      <div style="font-size:11px;font-weight:600;margin-top:4px;color:#3B82F6;">
+        👨‍🏫 Mentor: Sandeep Sir
+      </div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -1174,6 +1177,7 @@ st.markdown(
     "&nbsp;·&nbsp;European Bank 2025"
     "&nbsp;·&nbsp;Gradient Boosting AUC 0.868"
     "&nbsp;·&nbsp;CV: 0.866 ± 0.008"
+    "&nbsp;·&nbsp;👨‍🏫 Mentor: Sandeep Sir"
     "</div>",
     unsafe_allow_html=True,
 )
