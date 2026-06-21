@@ -306,7 +306,7 @@ SCALE = len(df) / len(y_test)
 with st.sidebar:
     st.markdown("""
     <div style="padding:4px 0 14px 0;">
-      <div style="font-size:13.5px;font-weight:700;letter-spacing:0.14em;
+      <div style="font-size:14.5px;font-weight:700;letter-spacing:0.14em;
                   text-transform:uppercase;color:#3B82F6;font-family:monospace;margin-bottom:6px;">
         🏦 Project
       </div>
