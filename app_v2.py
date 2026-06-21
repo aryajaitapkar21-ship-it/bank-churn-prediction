@@ -56,7 +56,7 @@ html, body, [class*="css"] {
 }
 
 h1 {
-  font-size: 1.9rem !important;
+  font-size: 2.5rem !important;
   font-weight: 800 !important;
   letter-spacing: -0.03em !important;
   line-height: 1.2 !important;
