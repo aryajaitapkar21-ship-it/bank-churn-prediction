@@ -313,10 +313,10 @@ with st.sidebar:
       <div style="font-size:20px;font-weight:800;line-height:1.4;letter-spacing:-0.02em;">
         Predictive Modeling and<br>Risk Scoring for Bank<br>Customer Churn
       </div>
-      <div style="font-size:11px;font-weight:500;opacity:0.5;margin-top:5px;">
+      <div style="font-size:17px;font-weight:500;opacity:0.5;margin-top:5px;">
         European Bank · 2025
       </div>
-      <div style="font-size:11px;font-weight:600;margin-top:4px;color:#3B82F6;">
+      <div style="font-size:15px;font-weight:600;margin-top:4px;color:#3B82F6;">
         👨‍🏫 Mentor: Sandeep Sir
       </div>
     </div>
