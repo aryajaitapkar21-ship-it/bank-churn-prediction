@@ -310,7 +310,7 @@ with st.sidebar:
                   text-transform:uppercase;color:#3B82F6;font-family:monospace;margin-bottom:6px;">
         🏦 Project
       </div>
-      <div style="font-size:13px;font-weight:800;line-height:1.4;letter-spacing:-0.02em;">
+      <div style="font-size:16px;font-weight:800;line-height:1.4;letter-spacing:-0.02em;">
         Predictive Modeling and<br>Risk Scoring for Bank<br>Customer Churn
       </div>
       <div style="font-size:11px;font-weight:500;opacity:0.5;margin-top:5px;">
