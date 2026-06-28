@@ -1145,9 +1145,7 @@ elif page == "📋 Customer Risk Table":
         "ChurnProbability","RiskLevel","Exited",
     ]
     st.dataframe(
-        filtered[display_cols].head(500).style.background_gradient(
-            subset=["ChurnProbability"], cmap="RdYlGn_r"
-        ),
+        filtered[display_cols].head(500),
         use_container_width=True, hide_index=True, height=450,
     )
 
